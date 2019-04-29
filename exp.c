@@ -23,7 +23,7 @@ int main(void) {
 }
 
 void getDiv(double sp, double sq, int n) {
-    const int expN = 100000;
+    const int expN = 1000000;
     const int precision = 200;
     int x, y, i;
     double *pis, *qis;
@@ -58,7 +58,7 @@ void getDiv(double sp, double sq, int n) {
     //
     div /= sum_p;
     div += log(sum_q / sum_p);
-    printf("(Normal)\tsp,sq=%f,%f, n=%d\t-- div=%f\n", sp, sq, n, div);
+    printf("sp,sq=%f,%f, n=%d\n(Normal)\tdiv=%f\n", sp, sq, n, div);
 
     // Compute divergence (high precision)
     // a. Init
@@ -73,11 +73,26 @@ void getDiv(double sp, double sq, int n) {
     mpfr_set_d(sum_q_p, 0.0, MPFR_RNDD);
     mpfr_set_d(div_p, 0.0, MPFR_RNDD);
     // b. Go over incidences.
-    for (i=0; i<expN; i++) {
+    for (i=0; i<n; i++) {
         mpfr_set_d(pi_p, pis[i], MPFR_RNDD);
         mpfr_set_d(qi_p, qis[i], MPFR_RNDD);
+        mpfr_add(sum_p_p, sum_p_p, pi_p, MPFR_RNDD);
+        mpfr_add(sum_q_p, sum_q_p, qi_p, MPFR_RNDD);
+        //
+        mpfr_div(tmp_p, pi_p, qi_p, MPFR_RNDD);     // tmp = pi/qi
+        mpfr_log(tmp_p, tmp_p, MPFR_RNDD);          // tmp = log(pi/qi)
+        mpfr_mul(tmp_p, pi_p, tmp_p, MPFR_RNDD);    // tmp = pi*log(pi/qi)
+        mpfr_add(div_p, div_p, tmp_p, MPFR_RNDD);
     }
     // c. Post loop
+    mpfr_div(div_p, div_p, sum_p_p, MPFR_RNDD);     // div /= sum_p
+    mpfr_div(tmp_p, sum_q_p, sum_p_p, MPFR_RNDD);   // tmp = sum_q / sum_p
+    mpfr_log(tmp_p, tmp_p, MPFR_RNDD);              // tmp = log(sum_q / sum_p)
+    mpfr_add(div_p, div_p, tmp_p, MPFR_RNDD);       // div += tmp
+    //
+    printf("(Precision=%d)\tdiv=", precision);
+    mpfr_out_str(stdout, 10, 10, div_p, MPFR_RNDD);
+    printf("\n");
     // d. Clearing
     mpfr_clear(tmp_p);
     mpfr_clear(pi_p);
