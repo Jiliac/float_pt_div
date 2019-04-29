@@ -12,8 +12,7 @@ void getDiv(double sp, double sq, int n);
 int zipf(double alpha, int n);
 
 int main(void) {
-    getDiv(1.0, 2.0, 50);
-    getDiv(1.0, 2.5, 50);
+    getDiv(1.5, 0.5, 2000);
 
     //testZipf(1.0, 100);
     //testZipf(2.0, 100);
@@ -23,7 +22,7 @@ int main(void) {
 }
 
 void getDiv(double sp, double sq, int n) {
-    const int expN = 1000000;
+    const int expN = 100000;
     const int precision = 200;
     int x, y, i;
     double *pis, *qis;
@@ -53,6 +52,9 @@ void getDiv(double sp, double sq, int n) {
         qi = qis[i];
         sum_p += pi;
         sum_q += qi;
+        if (pi < .5) {
+            continue;
+        }
         div += pi * log(pi/qi);
     }
     //
@@ -79,6 +81,9 @@ void getDiv(double sp, double sq, int n) {
         mpfr_add(sum_p_p, sum_p_p, pi_p, MPFR_RNDD);
         mpfr_add(sum_q_p, sum_q_p, qi_p, MPFR_RNDD);
         //
+        if (pis[i] < .5) {
+            continue;
+        }
         mpfr_div(tmp_p, pi_p, qi_p, MPFR_RNDD);     // tmp = pi/qi
         mpfr_log(tmp_p, tmp_p, MPFR_RNDD);          // tmp = log(pi/qi)
         mpfr_mul(tmp_p, pi_p, tmp_p, MPFR_RNDD);    // tmp = pi*log(pi/qi)
