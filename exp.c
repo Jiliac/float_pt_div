@@ -3,10 +3,38 @@
 #include<math.h>
 #include<assert.h>
 
+void testZipf(void);
+double getDiv(double sp, double sq, int np, int nq);
 int zipf(double alpha, int n);
 
 int main(void) {
-    const int expN = 10000;
+    double res = getDiv(1.0, 2.0, 20, 20);
+    printf("res: %f\n", res);
+    return 0;
+}
+
+double getDiv(double sp, double sq, int np, int nq) {
+    const int expN = 100000;
+    int i;
+    double pi, qi;
+    double sum_p=0, sum_q=0, div=0;
+
+    for (i=0; i<expN; i++) {
+        pi = (double) zipf(sp, np);
+        qi = (double) zipf(sq, nq);
+        sum_p += pi;
+        sum_q += qi;
+        div += pi * log(pi/qi);
+    }
+
+    div /= sum_p;
+    div += log(sum_q) / log(sum_p);
+
+    return div;
+}
+
+void testZipf(void) {
+    const int expN = 100000;
     int tot = 0, sqTot = 0;
     double avg, var;
     int i, z;
@@ -21,8 +49,6 @@ int main(void) {
     var -= avg*avg;
     var = sqrt(var);
     printf("%f - %f\n", avg, var);
-
-    return 0;
 }
 
 int zipf(double alpha, int n) {
