@@ -9,13 +9,13 @@ double getDiv(double sp, double sq, int n);
 int zipf(double alpha, int n);
 
 int main(void) {
-    double res = getDiv(1.0, 2.0, 20);
+    double res = getDiv(1.0, 4.0, 100);
     printf("res: %f\n", res);
     return 0;
 }
 
 double getDiv(double sp, double sq, int n) {
-    const int expN = 1000;
+    const int expN = 1000000;
     int x, y, i;
     double *pis, *qis;
     double pi, qi;
@@ -29,26 +29,26 @@ double getDiv(double sp, double sq, int n) {
 
     // Compute incidences (throughing dices).
     for (i=0; i<expN; i++) {
-        x = zipf(sp, n);
-        y = zipf(sq, n);
-        pis[x-1] = pis[x-1] + 1.0
-        qis[y-1] = qis[y-1] + 1.0;
-        printf("%d, %d\t-- %d,%d\n", x, y, pis[x-1], qis[y-1]);
+        x = zipf(sp, n) - 1;
+        y = zipf(sq, n) - 1;
+        pis[x] = pis[x] + 1.0;
+        qis[y] = qis[y] + 1.0;
     }
 
     // Compute divergence
     printf("%f\n", div);
     for (i=0; i<n; i++) {
-        pi, qi = pis[i], qis[i];
+        pi = pis[i];
+        qi = qis[i];
         sum_p += pi;
         sum_q += qi;
         div += pi * log(pi/qi);
-        printf("%f (pi,qi=%d,%d)\n", div, pi, qi);
+        printf("i=%d, %f (pi, qi=%f, %f)\n", i, div, pi, qi);
     }
 
     div /= sum_p;
     printf("%f\n", div);
-    div += log(sum_q) / log(sum_p);
+    div += log(sum_q / sum_p);
 
     free(pis);
     free(qis);
