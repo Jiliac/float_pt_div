@@ -2,34 +2,56 @@
 #include<stdio.h>
 #include<math.h>
 #include<assert.h>
+#include<string.h>
 
 void testZipf(void);
-double getDiv(double sp, double sq, int np, int nq);
+double getDiv(double sp, double sq, int n);
 int zipf(double alpha, int n);
 
 int main(void) {
-    double res = getDiv(1.0, 2.0, 20, 20);
+    double res = getDiv(1.0, 2.0, 20);
     printf("res: %f\n", res);
     return 0;
 }
 
-double getDiv(double sp, double sq, int np, int nq) {
-    const int expN = 100000;
-    int i;
+double getDiv(double sp, double sq, int n) {
+    const int expN = 1000;
+    int x, y, i;
+    double *pis, *qis;
     double pi, qi;
     double sum_p=0, sum_q=0, div=0;
 
+    // Init Arrays
+    pis = (double*) malloc(sizeof(double) * n);
+    qis = (double*) malloc(sizeof(double) * n);
+    memset(pis, 0, sizeof(double) * n);
+    memset(qis, 0, sizeof(double) * n);
+
+    // Compute incidences (throughing dices).
     for (i=0; i<expN; i++) {
-        pi = (double) zipf(sp, np);
-        qi = (double) zipf(sq, nq);
+        x = zipf(sp, n);
+        y = zipf(sq, n);
+        pis[x-1] = pis[x-1] + 1.0
+        qis[y-1] = qis[y-1] + 1.0;
+        printf("%d, %d\t-- %d,%d\n", x, y, pis[x-1], qis[y-1]);
+    }
+
+    // Compute divergence
+    printf("%f\n", div);
+    for (i=0; i<n; i++) {
+        pi, qi = pis[i], qis[i];
         sum_p += pi;
         sum_q += qi;
         div += pi * log(pi/qi);
+        printf("%f (pi,qi=%d,%d)\n", div, pi, qi);
     }
 
     div /= sum_p;
+    printf("%f\n", div);
     div += log(sum_q) / log(sum_p);
 
+    free(pis);
+    free(qis);
     return div;
 }
 
