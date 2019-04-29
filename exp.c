@@ -5,16 +5,16 @@
 #include<string.h>
 
 void testZipf(double s, int n);
-double getDiv(double sp, double sq, int n);
+void getDiv(double sp, double sq, int n);
 int zipf(double alpha, int n);
 
 int main(void) {
-    //double res = getDiv(1.0, 4.0, 100);
-    //printf("res: %f\n", res);
+    getDiv(1.0, 2.0, 50);
+    getDiv(1.0, 2.5, 50);
 
-    testZipf(1.0, 100);
-    testZipf(2.0, 100);
-    testZipf(4.0, 100);
+    //testZipf(1.0, 100);
+    //testZipf(2.0, 100);
+    //testZipf(4.0, 100);
 
     return 0;
 }
@@ -40,24 +40,23 @@ double getDiv(double sp, double sq, int n) {
         qis[y] = qis[y] + 1.0;
     }
 
-    // Compute divergence
-    printf("%f\n", div);
+    // Compute divergence (Normal precision)
     for (i=0; i<n; i++) {
         pi = pis[i];
         qi = qis[i];
         sum_p += pi;
         sum_q += qi;
         div += pi * log(pi/qi);
-        printf("i=%d, %f (pi, qi=%f, %f)\n", i, div, pi, qi);
     }
-
+    //
     div /= sum_p;
-    printf("%f\n", div);
     div += log(sum_q / sum_p);
+    printf("sp,sq=%f,%f, n=%d\t-- div=%f\n", sp, sq, n, div);
+
+    // Compute divergence (high precision)
 
     free(pis);
     free(qis);
-    return div;
 }
 
 void testZipf(double s, int n) {
@@ -79,9 +78,9 @@ void testZipf(double s, int n) {
 }
 
 int zipf(double alpha, int n) {
-    static int first = 1;      // Static first time flag
-    static double c = 0;          // Normalization constant
-    static double *sum_probs;     // Pre-calculated sum of probabilities
+    int first = 1;      // Static first time flag
+    double c = 0;          // Normalization constant
+    double *sum_probs;     // Pre-calculated sum of probabilities
     double z;                     // Uniform random number (0 < z < 1)
     int zipf_value;               // Computed exponential value to be returned
     int    i;                     // Loop counter
