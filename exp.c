@@ -4,13 +4,18 @@
 #include<assert.h>
 #include<string.h>
 
-void testZipf(void);
+void testZipf(double s, int n);
 double getDiv(double sp, double sq, int n);
 int zipf(double alpha, int n);
 
 int main(void) {
-    double res = getDiv(1.0, 4.0, 100);
-    printf("res: %f\n", res);
+    //double res = getDiv(1.0, 4.0, 100);
+    //printf("res: %f\n", res);
+
+    testZipf(1.0, 100);
+    testZipf(2.0, 100);
+    testZipf(4.0, 100);
+
     return 0;
 }
 
@@ -55,14 +60,14 @@ double getDiv(double sp, double sq, int n) {
     return div;
 }
 
-void testZipf(void) {
+void testZipf(double s, int n) {
     const int expN = 100000;
     int tot = 0, sqTot = 0;
     double avg, var;
     int i, z;
 
     for (i=0; i<expN; i++) {
-        z = zipf(1, 10);
+        z = zipf(s, n);
         tot += z;
         sqTot += z * z;
     }
