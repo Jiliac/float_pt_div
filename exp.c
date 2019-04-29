@@ -4,6 +4,9 @@
 #include<assert.h>
 #include<string.h>
 
+#include<gmp.h>
+#include<mpfr.h>
+
 void testZipf(double s, int n);
 void getDiv(double sp, double sq, int n);
 int zipf(double alpha, int n);
@@ -19,12 +22,16 @@ int main(void) {
     return 0;
 }
 
-double getDiv(double sp, double sq, int n) {
-    const int expN = 1000000;
+void getDiv(double sp, double sq, int n) {
+    const int expN = 100000;
+    const int precision = 200;
     int x, y, i;
     double *pis, *qis;
     double pi, qi;
+    // Normal precision.
     double sum_p=0, sum_q=0, div=0;
+    // MPFR
+    mpfr_t tmp_p, pi_p, qi_p, sum_p_p, sum_q_p, div_p;
 
     // Init Arrays
     pis = (double*) malloc(sizeof(double) * n);
@@ -51,9 +58,34 @@ double getDiv(double sp, double sq, int n) {
     //
     div /= sum_p;
     div += log(sum_q / sum_p);
-    printf("sp,sq=%f,%f, n=%d\t-- div=%f\n", sp, sq, n, div);
+    printf("(Normal)\tsp,sq=%f,%f, n=%d\t-- div=%f\n", sp, sq, n, div);
 
     // Compute divergence (high precision)
+    // a. Init
+    mpfr_init2(tmp_p, precision);
+    mpfr_init2(pi_p, precision);
+    mpfr_init2(qi_p, precision);
+    mpfr_init2(sum_p_p, precision);
+    mpfr_init2(sum_q_p, precision);
+    mpfr_init2(div_p, precision);
+    //
+    mpfr_set_d(sum_p_p, 0.0, MPFR_RNDD);
+    mpfr_set_d(sum_q_p, 0.0, MPFR_RNDD);
+    mpfr_set_d(div_p, 0.0, MPFR_RNDD);
+    // b. Go over incidences.
+    for (i=0; i<expN; i++) {
+        mpfr_set_d(pi_p, pis[i], MPFR_RNDD);
+        mpfr_set_d(qi_p, qis[i], MPFR_RNDD);
+    }
+    // c. Post loop
+    // d. Clearing
+    mpfr_clear(tmp_p);
+    mpfr_clear(pi_p);
+    mpfr_clear(qi_p);
+    mpfr_clear(sum_p_p);
+    mpfr_clear(sum_q_p);
+    mpfr_clear(div_p);
+    mpfr_free_cache();
 
     free(pis);
     free(qis);
