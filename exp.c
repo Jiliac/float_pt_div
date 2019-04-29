@@ -130,7 +130,6 @@ void testZipf(double s, int n) {
 }
 
 int zipf(double alpha, int n) {
-    int first = 1;      // Static first time flag
     double c = 0;          // Normalization constant
     double *sum_probs;     // Pre-calculated sum of probabilities
     double z;                     // Uniform random number (0 < z < 1)
@@ -139,17 +138,14 @@ int zipf(double alpha, int n) {
     int low, high, mid;           // Binary-search bounds
 
     // Compute normalization constant on first call only
-    if (first) {
-        for (i=1; i<=n; i++)
-            c = c + (1.0 / pow((double) i, alpha));
-        c = 1.0 / c;
+    for (i=1; i<=n; i++)
+        c = c + (1.0 / pow((double) i, alpha));
+    c = 1.0 / c;
 
-        sum_probs = malloc((n+1)*sizeof(*sum_probs));
-        sum_probs[0] = 0;
-        for (i=1; i<=n; i++) {
-            sum_probs[i] = sum_probs[i-1] + c / pow((double) i, alpha);
-        }
-        first = 0;
+    sum_probs = malloc((n+1)*sizeof(*sum_probs));
+    sum_probs[0] = 0;
+    for (i=1; i<=n; i++) {
+        sum_probs[i] = sum_probs[i-1] + c / pow((double) i, alpha);
     }
 
     // Pull a uniform random number (0 < z < 1)
@@ -171,6 +167,8 @@ int zipf(double alpha, int n) {
             low = mid+1;
         }
     } while (low <= high);
+
+    free(sum_probs);
 
     // Assert that zipf_value is between 1 and N
     assert((zipf_value >=1) && (zipf_value <= n));
