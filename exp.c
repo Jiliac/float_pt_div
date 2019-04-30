@@ -61,7 +61,7 @@ double kl_normal(int n, double s_p, double s_q,
     return div;
 }
 
-double kl_precise(int n, double s_p, double s_q, 
+double kl_precise(int n, double s_p, double s_q,
           int samples_p, int samples_q,
           std::vector<int> indices_p, std::vector<int> indices_q) {
     int x, y, i;
@@ -297,7 +297,6 @@ int zipf(double alpha, int n) {
 
 
 int main(void) {
-
   int species = 50;
   double div_n;
   double div_p;
@@ -315,12 +314,13 @@ int main(void) {
 
 
   printf("Normal, Precise, Difference\n");
-  for (i = 0; i < 50; i++) {
-    div_n = kl_normal(species, 2.0, 3.0, 100000, 100000, indices_p, indices_q);
-    div_p = kl_precise(species, 2.0, 3.0, 100000, 100000, indices_p, indices_q);
+  const int expN = 1000000;
+  for (i = 0; i < 100; i++) {
+    div_n = kl_normal(species, 2.0, 3.0, expN, expN, indices_p, indices_q);
+    div_p = kl_precise(species, 2.0, 3.0, expN, expN, indices_p, indices_q);
 
     printf("%20f, %20f, %20f\n", div_n, div_p, div_p - div_n);
-  } 
+  }
 
   //  getDiv(1.5, 0.5, 50);
     //testZipf(1.0, 100);
